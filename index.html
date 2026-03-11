@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Machine V2.6b | Live Stats</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Money Machine <span class="text-blue-500">V2.6b</span></h1>
+                <p id="status-text" class="text-slate-400 mt-1">טוען סטטוס מערכת...</p>
+            </div>
+            <div class="glass px-6 py-3 rounded-2xl">
+                <span class="text-xs text-slate-500 block uppercase font-bold tracking-widest">עדכון אחרון</span>
+                <span id="last-update" class="text-lg font-mono text-blue-400">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
+                <div class="text-slate-400 text-sm mb-2 font-medium">יתרה וירטואלית ($)</div>
+                <div id="balance" class="text-4xl font-bold font-mono text-emerald-400">$0.00</div>
+            </div>
+            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
+                <div class="text-slate-400 text-sm mb-2 font-medium">עסקאות שבוצעו</div>
+                <div id="trades" class="text-4xl font-bold font-mono text-blue-400">0</div>
+            </div>
+            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
+                <div class="text-slate-400 text-sm mb-2 font-medium">חשיפה (BTC)</div>
+                <div id="exposure" class="text-4xl font-bold font-mono text-purple-400">0.0000</div>
+            </div>
+        </div>
+
+        <div class="glass rounded-3xl overflow-hidden">
+            <div class="p-5 border-b border-slate-700/50 flex justify-between items-center">
+                <h3 class="font-bold text-slate-300 uppercase text-xs tracking-widest">יומן פעילות מנוע 10/10</h3>
+                <span class="px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-500 text-[10px] font-bold">LIVE</span>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex justify-between items-center p-4 bg-slate-800/40 rounded-2xl border border-slate-700/30">
+                    <span class="text-slate-400">מחיר כניסה אחרון</span>
+                    <span id="entry-price" class="text-white font-mono font-bold">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RENDER_URL = 'https://money-machine-bot.onrender.com/api/portfolio';
+
+        async function updateDashboard() {
+            try {
+                const response = await fetch(RENDER_URL);
+                const data = await response.json();
+
+                // עדכון המספרים
+                const currentBalance = data.balance > 0 ? data.balance : (data.btcAmount * data.entryPrice);
+                document.getElementById('balance').innerText = '$' + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
+                document.getElementById('trades').innerText = data.totalTrades;
+                document.getElementById('exposure').innerText = data.btcAmount.toFixed(4);
+                document.getElementById('entry-price').innerText = '$' + data.entryPrice.toLocaleString();
+                document.getElementById('last-update').innerText = new Date(data.lastUpdate).toLocaleTimeString();
+                
+                const statusEl = document.getElementById('status-text');
+                if (data.isPositionOpen) {
+                    statusEl.innerText = '🟢 עסקה פעילה - המנוע בלונג';
+                    statusEl.className = 'text-emerald-400 mt-1 font-bold';
+                } else {
+                    statusEl.innerText = '⚪ במתן לסיגנל - המנוע במזומן';
+                    statusEl.className = 'text-slate-400 mt-1';
+                }
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                document.getElementById('status-text').innerText = '❌ שגיאת תקשורת עם השרת';
+            }
+        }
+
+        updateDashboard();
+        setInterval(updateDashboard, 30000); // עדכון כל 30 שניות
+    </script>
+</body>
+</html>

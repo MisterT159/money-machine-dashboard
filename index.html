@@ -3,73 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Money Machine | Live</title>
+    <title>Money Machine | Executive Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'SF Pro Display', -apple-system, sans-serif; background: #000; color: #fff; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; }
+        body { font-family: 'SF Pro Display', -apple-system, sans-serif; background: #000; color: #fff; overflow-x: hidden; letter-spacing: -0.01em; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; }
         .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
-        .gradient-text { background: linear-gradient(135deg, #fff 0%, #64748b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+        .metric-label { font-size: 10px; text-transform: uppercase; tracking: 0.2em; color: #64748b; font-weight: 700; margin-bottom: 8px; display: block; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .progress-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 1s ease-in-out; }
     </style>
 </head>
-<body class="p-6 md:p-12">
-    <div class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-end mb-16">
+<body class="p-6 md:p-12 bg-[#050505]">
+    <div class="max-w-5xl mx-auto">
+        
+        <header class="flex justify-between items-start mb-12">
             <div>
-                <h1 class="text-4xl font-semibold tracking-tight gradient-text">Money Machine</h1>
-                <div class="flex items-center gap-2 mt-2">
-                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-500"></div>
-                    <p id="status-text" class="text-sm text-slate-500 font-light tracking-wide">Connecting to engine...</p>
+                <h1 class="text-3xl font-semibold text-white tracking-tight">Money Machine <span class="font-light opacity-50 text-xl italic">V2.6b</span></h1>
+                <div class="flex items-center gap-3 mt-3">
+                    <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
+                    <span id="status-text" class="text-sm font-medium tracking-wide text-slate-500 italic">Initializing systems...</span>
                 </div>
             </div>
-            <div class="text-left">
-                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold block mb-1">Last Sync</span>
-                <span id="last-update" class="text-xl font-light text-white/90 tabular-nums">--:--:--</span>
+            <div class="glass px-5 py-3 text-left">
+                <span class="metric-label">System Heartbeat</span>
+                <div class="flex items-center gap-2">
+                    <span id="last-update" class="text-lg font-light mono tracking-tighter">--:--:--</span>
+                    <span class="text-[10px] text-emerald-500 font-bold opacity-50 uppercase">Live</span>
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div class="glass p-8 flex flex-col justify-between min-h-[200px] hover:bg-white/[0.05] transition-all">
-                <span class="text-sm text-slate-400 font-medium">Virtual Equity</span>
-                <div>
-                    <span id="balance" class="text-5xl font-semibold tracking-tighter text-white">$0.00</span>
-                    <div id="pnl-indicator" class="text-xs mt-2 flex items-center gap-1 font-medium"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass p-8 col-span-1 md:col-span-2 relative overflow-hidden group hover:bg-white/[0.04] transition-all">
+                <span class="metric-label">Portfolio Value</span>
+                <div class="flex items-baseline gap-2">
+                    <h2 id="balance" class="text-6xl font-semibold tracking-tighter tabular-nums">$0.00</h2>
+                    <span id="currency-tag" class="text-slate-500 font-light text-xl">USD</span>
                 </div>
+                <div id="pnl-meter" class="mt-6 flex items-center gap-2">
+                    </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="glass p-6 flex flex-col justify-between hover:bg-white/[0.05] transition-all">
-                    <span class="text-xs text-slate-400 uppercase tracking-widest">Trades</span>
-                    <span id="trades" class="text-3xl font-light italic">0</span>
+            <div class="space-y-6">
+                <div class="glass p-6 hover:bg-white/[0.04] transition-all">
+                    <span class="metric-label">Total Trades</span>
+                    <span id="trades" class="text-4xl font-light mono">0</span>
                 </div>
-                <div class="glass p-6 flex flex-col justify-between hover:bg-white/[0.05] transition-all">
-                    <span class="text-xs text-slate-400 uppercase tracking-widest">Exposure</span>
-                    <span id="exposure" class="text-2xl font-light tabular-nums">0.000</span>
+                <div class="glass p-6 hover:bg-white/[0.04] transition-all">
+                    <span class="metric-label">Current Exposure</span>
+                    <span id="exposure" class="text-2xl font-light mono">0.0000 BTC</span>
                 </div>
             </div>
         </div>
 
-        <div class="glass overflow-hidden shadow-2xl">
-            <div class="px-8 py-5 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
-                <h3 class="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black">System Terminal</h3>
-                <button onclick="updateDashboard()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Refresh</button>
-            </div>
-            <div class="p-8">
-                <div class="flex justify-between items-center py-4 border-b border-white/5">
-                    <span class="text-slate-400 text-sm">Engine Version</span>
-                    <span class="text-white text-sm font-mono">2.6b Production</span>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="glass p-8">
+                <h3 class="metric-label mb-6">Market Sentiment Gauge</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between mb-2 text-xs">
+                            <span class="text-slate-400">SMA 100 Health</span>
+                            <span id="sma-percent" class="mono text-white">--%</span>
+                        </div>
+                        <div class="progress-bar"><div id="sma-bar" class="progress-fill bg-blue-500" style="width: 0%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-2 text-xs">
+                            <span class="text-slate-400">Donchian Channel Position</span>
+                            <span id="donchian-percent" class="mono text-white">--%</span>
+                        </div>
+                        <div class="progress-bar"><div id="donchian-bar" class="progress-fill bg-purple-500" style="width: 0%"></div></div>
+                    </div>
                 </div>
-                <div class="flex justify-between items-center py-4">
-                    <span class="text-slate-400 text-sm">Entry Reference</span>
-                    <span id="entry-price" class="text-white text-sm font-mono">$0.00</span>
+            </div>
+
+            <div class="glass p-8 relative overflow-hidden">
+                <h3 class="metric-label mb-6">Trade Log (Last Action)</h3>
+                <div id="trade-log" class="space-y-4">
+                    <div class="flex justify-between items-center py-3 border-b border-white/5">
+                        <span class="text-slate-500 text-sm italic">Last Entry</span>
+                        <span id="entry-price" class="text-white mono text-sm font-medium">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center py-3">
+                        <span class="text-slate-500 text-sm italic">Strategy Logic</span>
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest">Donchian 55/100</span>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <footer class="mt-12 text-center">
-            <p class="text-[10px] text-slate-600 tracking-widest uppercase">Designed for performance. Stay hungry.</p>
+
+        <footer class="mt-16 text-center opacity-30">
+            <p class="text-[9px] uppercase tracking-[0.4em] font-black italic">Precision Engineering for Digital Assets</p>
         </footer>
     </div>
 
@@ -81,41 +109,43 @@
             const statusText = document.getElementById('status-text');
             
             try {
-                // מניעת Cache ועדכון נתונים
                 const response = await fetch(`${RENDER_URL}?t=${new Date().getTime()}`);
                 if (!response.ok) throw new Error();
                 const data = await response.json();
 
-                // חישובים
+                // 1. נתונים פיננסיים
                 const currentBalance = data.balance > 0 ? data.balance : (data.btcAmount * data.entryPrice);
-                
-                // עדכון ויזואלי
                 document.getElementById('balance').innerText = '$' + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
                 document.getElementById('trades').innerText = data.totalTrades;
                 document.getElementById('exposure').innerText = data.btcAmount.toFixed(4) + ' BTC';
                 document.getElementById('entry-price').innerText = '$' + (data.entryPrice || 0).toLocaleString();
                 document.getElementById('last-update').innerText = new Date().toLocaleTimeString('he-IL', { hour12: false });
 
-                // עדכון סטטוס "סטיב ג'ובס"
+                // 2. מחוונים (סימולציה של נתונים טכניים מהשרת)
+                // כאן הוספנו לוגיקה שמראה ויזואלית את המצב
                 if (data.isPositionOpen) {
-                    statusDot.className = "w-2 h-2 rounded-full bg-emerald-500 pulse";
-                    statusText.innerText = "Engine Active | Long Position";
-                    statusText.className = "text-sm text-emerald-400 font-medium";
+                    statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 pulse shadow-[0_0_15px_rgba(16,185,129,0.5)]";
+                    statusText.innerText = "Active Trade: Long BTC/USDT";
+                    statusText.className = "text-sm text-emerald-400 font-medium tracking-wide";
+                    document.getElementById('sma-bar').style.width = "100%";
+                    document.getElementById('donchian-bar').style.width = "85%";
                 } else {
-                    statusDot.className = "w-2 h-2 rounded-full bg-blue-500 pulse";
-                    statusText.innerText = "Engine Scanning Market...";
-                    statusText.className = "text-sm text-blue-400 font-light";
+                    statusDot.className = "w-2.5 h-2.5 rounded-full bg-blue-500 pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]";
+                    statusText.innerText = "Analyzing Liquidity & Trends...";
+                    statusText.className = "text-sm text-blue-400 font-light tracking-wide";
+                    document.getElementById('sma-bar').style.width = "40%";
+                    document.getElementById('donchian-bar').style.width = "20%";
                 }
 
             } catch (err) {
-                statusDot.className = "w-2 h-2 rounded-full bg-red-600";
-                statusText.innerText = "System Offline - Waiting for Render...";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-red-600";
+                statusText.innerText = "System Offline - Waiting for Reconnection";
                 statusText.className = "text-sm text-red-500 italic";
             }
         }
 
         updateDashboard();
-        setInterval(updateDashboard, 15000); // עדכון מהיר יותר כל 15 שניות
+        setInterval(updateDashboard, 15000);
     </script>
 </body>
 </html>

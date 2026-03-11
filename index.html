@@ -3,89 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Money Machine V2.6b | Live Stats</title>
+    <title>Money Machine | Live</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+        body { font-family: 'SF Pro Display', -apple-system, sans-serif; background: #000; color: #fff; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; }
+        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+        .gradient-text { background: linear-gradient(135deg, #fff 0%, #64748b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-5xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<body class="p-6 md:p-12">
+    <div class="max-w-4xl mx-auto">
+        <header class="flex justify-between items-end mb-16">
             <div>
-                <h1 class="text-3xl font-extrabold text-white tracking-tight">Money Machine <span class="text-blue-500">V2.6b</span></h1>
-                <p id="status-text" class="text-slate-400 mt-1">טוען סטטוס מערכת...</p>
+                <h1 class="text-4xl font-semibold tracking-tight gradient-text">Money Machine</h1>
+                <div class="flex items-center gap-2 mt-2">
+                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-500"></div>
+                    <p id="status-text" class="text-sm text-slate-500 font-light tracking-wide">Connecting to engine...</p>
+                </div>
             </div>
-            <div class="glass px-6 py-3 rounded-2xl">
-                <span class="text-xs text-slate-500 block uppercase font-bold tracking-widest">עדכון אחרון</span>
-                <span id="last-update" class="text-lg font-mono text-blue-400">--:--:--</span>
+            <div class="text-left">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold block mb-1">Last Sync</span>
+                <span id="last-update" class="text-xl font-light text-white/90 tabular-nums">--:--:--</span>
             </div>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
-                <div class="text-slate-400 text-sm mb-2 font-medium">יתרה וירטואלית ($)</div>
-                <div id="balance" class="text-4xl font-bold font-mono text-emerald-400">$0.00</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="glass p-8 flex flex-col justify-between min-h-[200px] hover:bg-white/[0.05] transition-all">
+                <span class="text-sm text-slate-400 font-medium">Virtual Equity</span>
+                <div>
+                    <span id="balance" class="text-5xl font-semibold tracking-tighter text-white">$0.00</span>
+                    <div id="pnl-indicator" class="text-xs mt-2 flex items-center gap-1 font-medium"></div>
+                </div>
             </div>
-            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
-                <div class="text-slate-400 text-sm mb-2 font-medium">עסקאות שבוצעו</div>
-                <div id="trades" class="text-4xl font-bold font-mono text-blue-400">0</div>
-            </div>
-            <div class="glass p-6 rounded-3xl shadow-2xl transition-transform hover:scale-105">
-                <div class="text-slate-400 text-sm mb-2 font-medium">חשיפה (BTC)</div>
-                <div id="exposure" class="text-4xl font-bold font-mono text-purple-400">0.0000</div>
-            </div>
-        </div>
 
-        <div class="glass rounded-3xl overflow-hidden">
-            <div class="p-5 border-b border-slate-700/50 flex justify-between items-center">
-                <h3 class="font-bold text-slate-300 uppercase text-xs tracking-widest">יומן פעילות מנוע 10/10</h3>
-                <span class="px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-500 text-[10px] font-bold">LIVE</span>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="flex justify-between items-center p-4 bg-slate-800/40 rounded-2xl border border-slate-700/30">
-                    <span class="text-slate-400">מחיר כניסה אחרון</span>
-                    <span id="entry-price" class="text-white font-mono font-bold">$0.00</span>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass p-6 flex flex-col justify-between hover:bg-white/[0.05] transition-all">
+                    <span class="text-xs text-slate-400 uppercase tracking-widest">Trades</span>
+                    <span id="trades" class="text-3xl font-light italic">0</span>
+                </div>
+                <div class="glass p-6 flex flex-col justify-between hover:bg-white/[0.05] transition-all">
+                    <span class="text-xs text-slate-400 uppercase tracking-widest">Exposure</span>
+                    <span id="exposure" class="text-2xl font-light tabular-nums">0.000</span>
                 </div>
             </div>
         </div>
+
+        <div class="glass overflow-hidden shadow-2xl">
+            <div class="px-8 py-5 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+                <h3 class="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black">System Terminal</h3>
+                <button onclick="updateDashboard()" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">Refresh</button>
+            </div>
+            <div class="p-8">
+                <div class="flex justify-between items-center py-4 border-b border-white/5">
+                    <span class="text-slate-400 text-sm">Engine Version</span>
+                    <span class="text-white text-sm font-mono">2.6b Production</span>
+                </div>
+                <div class="flex justify-between items-center py-4">
+                    <span class="text-slate-400 text-sm">Entry Reference</span>
+                    <span id="entry-price" class="text-white text-sm font-mono">$0.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-12 text-center">
+            <p class="text-[10px] text-slate-600 tracking-widest uppercase">Designed for performance. Stay hungry.</p>
+        </footer>
     </div>
 
     <script>
         const RENDER_URL = 'https://money-machine-bot.onrender.com/api/portfolio';
 
         async function updateDashboard() {
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            
             try {
-                const response = await fetch(RENDER_URL);
+                // מניעת Cache ועדכון נתונים
+                const response = await fetch(`${RENDER_URL}?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error();
                 const data = await response.json();
 
-                // עדכון המספרים
+                // חישובים
                 const currentBalance = data.balance > 0 ? data.balance : (data.btcAmount * data.entryPrice);
+                
+                // עדכון ויזואלי
                 document.getElementById('balance').innerText = '$' + currentBalance.toLocaleString(undefined, {minimumFractionDigits: 2});
                 document.getElementById('trades').innerText = data.totalTrades;
-                document.getElementById('exposure').innerText = data.btcAmount.toFixed(4);
-                document.getElementById('entry-price').innerText = '$' + data.entryPrice.toLocaleString();
-                document.getElementById('last-update').innerText = new Date(data.lastUpdate).toLocaleTimeString();
-                
-                const statusEl = document.getElementById('status-text');
+                document.getElementById('exposure').innerText = data.btcAmount.toFixed(4) + ' BTC';
+                document.getElementById('entry-price').innerText = '$' + (data.entryPrice || 0).toLocaleString();
+                document.getElementById('last-update').innerText = new Date().toLocaleTimeString('he-IL', { hour12: false });
+
+                // עדכון סטטוס "סטיב ג'ובס"
                 if (data.isPositionOpen) {
-                    statusEl.innerText = '🟢 עסקה פעילה - המנוע בלונג';
-                    statusEl.className = 'text-emerald-400 mt-1 font-bold';
+                    statusDot.className = "w-2 h-2 rounded-full bg-emerald-500 pulse";
+                    statusText.innerText = "Engine Active | Long Position";
+                    statusText.className = "text-sm text-emerald-400 font-medium";
                 } else {
-                    statusEl.innerText = '⚪ במתן לסיגנל - המנוע במזומן';
-                    statusEl.className = 'text-slate-400 mt-1';
+                    statusDot.className = "w-2 h-2 rounded-full bg-blue-500 pulse";
+                    statusText.innerText = "Engine Scanning Market...";
+                    statusText.className = "text-sm text-blue-400 font-light";
                 }
 
             } catch (err) {
-                console.error("Error fetching data:", err);
-                document.getElementById('status-text').innerText = '❌ שגיאת תקשורת עם השרת';
+                statusDot.className = "w-2 h-2 rounded-full bg-red-600";
+                statusText.innerText = "System Offline - Waiting for Render...";
+                statusText.className = "text-sm text-red-500 italic";
             }
         }
 
         updateDashboard();
-        setInterval(updateDashboard, 30000); // עדכון כל 30 שניות
+        setInterval(updateDashboard, 15000); // עדכון מהיר יותר כל 15 שניות
     </script>
 </body>
 </html>
